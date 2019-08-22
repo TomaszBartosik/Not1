@@ -1,17 +1,26 @@
 package com.example.not1;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String CHANNEL_1_ID = "channel1";
+    // ==================================
+    // MUST BE THE SAME ON BOTH APPS
+    // FIXME IMPORTANT: APP team must send to us below variables
+    // ==================================
+    private static final int NOTIF_ID = 1;
+    public static final String NOTIF_TAG = "TAG_YETI";
+    private static final String NOTIF_CHANNEL_ID = "notif_channel_id";
+    // ==================================
+
+    //public static final String SECOND_APP_ID = "com.example.not2";
+    private static final String NOTIF_CHANNEL_NAME = "notif_channel_name_1";
+    private static final String NOTIF_CHANNEL_DESCRIPTION = "This is channel 1";
     private NotificationManager notificationManager;
 
     @Override
@@ -19,40 +28,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
         createNotificationChanels();
 
 
-        notificationManager= (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-
-        Notification notification = new Notification.Builder(this, MainActivity.CHANNEL_1_ID)
+        Notification notification = new Notification.Builder(this, MainActivity.NOTIF_CHANNEL_ID)
 
                 .setSmallIcon(R.drawable.ic_announcement_black_24dp)
                 .setContentTitle("aaaa")
                 .setContentText("bbbb")
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .build();
-        notificationManager.setNotificationDelegate("com.example.not2");
-        notificationManager.notify(1,notification);
+        // TODO: Below line means nothing
+        // it works without Delegate
+        //notificationManager.setNotificationDelegate(SECOND_APP_ID);
 
-
-
-        //Toast.makeText(getApplicationContext(),"FIRST SERVICE",Toast.LENGTH_SHORT).show();
-
-
+        notificationManager.notify(NOTIF_TAG,
+                NOTIF_ID,
+                notification);
     }
 
+    private void createNotificationChanels() {
+        NotificationChannel channel = new NotificationChannel(
+                NOTIF_CHANNEL_ID,
+                NOTIF_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+        );
+        channel.setDescription(NOTIF_CHANNEL_DESCRIPTION);
 
-    private void createNotificationChanels(){
-            NotificationChannel channel1 = new NotificationChannel(
-                    CHANNEL_1_ID,
-                    "Channel 1",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel1.setDescription("This is channel 1");
-
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel1);
+        notificationManager.createNotificationChannel(channel);
     }
 }
